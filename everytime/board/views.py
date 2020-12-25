@@ -3,6 +3,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from board.models import Board
+from board.serializers import BoardSerializer
 
 # Create your views here.
 
