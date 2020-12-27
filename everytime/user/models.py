@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 
+from user.manager import UserManager
 
 class User(AbstractBaseUser):
     password = models.CharField(max_length=128, null=False, blank=False, unique=True)
@@ -15,3 +16,5 @@ class User(AbstractBaseUser):
     date_joined = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = 'nickname'
+
+    objects = UserManager()
