@@ -1,6 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.db import IntegrityError
 from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
@@ -11,7 +10,6 @@ from user.serializers import UserSerializer
 
 
 class UserViewSet(viewsets.GenericViewSet):
-    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated, )
 
@@ -27,8 +25,8 @@ class UserViewSet(viewsets.GenericViewSet):
             user = serializer.save()
         except Exception as e:
             print(e)
-            errmsg = "Something Wrong"
-            return Response({'err': errmsg}, status=status.HTTP_400_BAD_REQUEST)
+            errmsg = "Something Wrong!"
+            return Response({'ERROR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
 
         login(request, user)
 
@@ -40,8 +38,11 @@ class UserViewSet(viewsets.GenericViewSet):
     def login(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
+        print("username : ", username)
+        print("password : ", password)
 
         user = authenticate(request, username=username, password=password)
+        print(user)
         if user:
             login(request, user)
 
@@ -49,10 +50,11 @@ class UserViewSet(viewsets.GenericViewSet):
             token, created = Token.objects.get_or_create(user=user)
             data['token'] = token.key
             return Response(data)
-        errmsg = "Wrong username or password"
-        return Response({'err': errmsg}, status=status.HTTP_403_FORBIDDEN)
+        errmsg = "Wrong username or password!"
+        return Response({'ERROR': errmsg}, status=status.HTTP_403_FORBIDDEN)
 
     @action(detail=False, methods=['POST'])
     def logout(self, request):
         logout(request)
-        return Response()
+        msg = "Logout!"
+        return Response({'MSG': msg})
