@@ -12,8 +12,10 @@ class Post(models.Model):
     numLikes = models.PositiveIntegerField()
     numComments = models.PositiveIntegerField()
     numScraps = models.PositiveIntegerField()
+    tag = models.CharField(blank=True, max_length=150)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
+
 
 class UserLikePost(models.Model):
     user = models.ForeignKey(User, null=True, related_name = 'userlikepost', on_delete = models.CASCADE)

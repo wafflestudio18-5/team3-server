@@ -7,7 +7,8 @@ class BoardSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'title',
+            'has_post_title',
+            'has_preview',
             'created_at',
             'updated_at',
-            'post_title',
         )
