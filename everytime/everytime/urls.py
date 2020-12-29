@@ -18,8 +18,13 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.urls import include, path
 
+from everytime.views import ping
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', ping),
+    path('api/', include('user.urls')),
 ]
 
 if settings.DEBUG_TOOLBAR:
