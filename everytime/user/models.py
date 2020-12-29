@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
-    is_certified = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
     nickname = models.CharField(max_length=150, blank=False, unique=True)
     university = models.CharField(max_length=150, blank=False)
     year = models.PositiveSmallIntegerField()
