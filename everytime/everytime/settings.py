@@ -32,6 +32,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '3.17.37.198/',
+    'api.waverytime.shop',
 ]
 
 
