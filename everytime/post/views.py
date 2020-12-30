@@ -23,6 +23,14 @@ class PostViewSet(viewsets.GenericViewSet):
     # UserLikePostSerializer ?
     #TODO: check user permission
 
+    @action(detail=False, methods=['GET'], url_path='listall')
+    def listAllPosts(self, request): # GET /api/post/listall/ | list all posts
+    # (모든 board에 있는 post를 보여줌, 개발용 api)
+        post = Post.objects.all()
+        data = self.get_serializer(post, many=True).data
+        return Response(data, status=status.HTTP_200_OK)
+
+
     @action(detail=False, methods=['GET'], url_path='list')
     def listPosts(self, request): # GET /api/post/list/ | list posts
         # TODO: implement this function
@@ -87,9 +95,14 @@ class PostViewSet(viewsets.GenericViewSet):
         return Response(status = status.HTTP_200_OK) # serializer?
 
     @action(detail=True, methods=['DELETE'], url_path='delete')
-    def deletePost(self, request): # DELETE /api/post/{pk}/delete/ | delete a post
+    def deletePost(self, request, pk=None): # DELETE /api/post/{pk}/delete/ | delete a post
         # TODO: implement this function
-        # TODO: pk
-        pass
+        user = request.user #TODO: check permission
+        try:
+            post = self.get_object()
+        except ObjectDoesNotExist:
+            return Response({"error": "Post does not exist."}, status = HTTP_404_NOT_FOUND)
+        post.delete()
+        return Response(status=status.HTTP_200_OK)
 
 
