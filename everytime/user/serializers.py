@@ -12,8 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
     university = serializers.CharField(source='profile.university')
     year = serializers.IntegerField(source='profile.year')
     phone = serializers.CharField(source='profile.phone')
-    is_certified = serializers.BooleanField(source='profile.is_certified')
-    is_active = serializers.BooleanField(default=True)
+    is_verified = serializers.BooleanField(source='profile.is_verified')
 
     class Meta:
         model = User
@@ -26,8 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
             'year',
             'phone',
             'email',
-            'is_active',
-            'is_certified',
+            'is_verified',
             'last_login',
             'date_joined',
         )
