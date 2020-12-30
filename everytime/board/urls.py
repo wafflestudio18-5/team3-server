@@ -7,6 +7,7 @@ app_name = 'board'
 
 #TODO: change this url
 
+
 #임시 url
 router = SimpleRouter()
 router.register('board', BoardViewSet, basename='board')  # /api/board/
