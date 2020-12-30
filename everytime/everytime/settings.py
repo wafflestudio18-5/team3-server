@@ -26,9 +26,13 @@ SECRET_KEY = 'yz^g08kirv@_2_x-y@6y&eu$ol2@(#7x_=ere4(yqo&u%#e3&4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 DEBUG_TOOLBAR = os.getenv('DEBUG_TOOLBAR') in ('true', 'True')
-AWS_DB = os.getenv('AWS') in ('true', 'True')
+LOCAL = os.getenv('LOCAL') in ('true', 'True')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '3.17.37.198/',
+]
 
 
 # Application definition
@@ -97,21 +101,21 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'everytime_db',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
+        'USER': 'admin',
+        'PASSWORD': 'waverytime',
+        'HOST': 'waverytime-db.ckt6zbg1wpus.us-east-2.rds.amazonaws.com',
         'PORT': '3306',
     }
 }
 
-if AWS_DB:
+if LOCAL:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'everytime_db',
-            'USER': 'admin',
-            'PASSWORD': 'waverytime',
-            'HOST': 'waverytime-db.ckt6zbg1wpus.us-east-2.rds.amazonaws.com',
+            'USER': 'root',
+            'PASSWORD': '',
+            'HOST': 'localhost',
             'PORT': '3306',
         }
     }
@@ -153,6 +157,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 AUTH_USER_MODEL = 'auth.User'
 
