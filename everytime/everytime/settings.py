@@ -39,6 +39,8 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'board.apps.BoardConfig',
+    'post.apps.PostConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -102,9 +104,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'everytime_db',
-        'USER': 'admin',
-        'PASSWORD': 'waverytime',
-        'HOST': 'waverytime-db.ckt6zbg1wpus.us-east-2.rds.amazonaws.com',
+        'USER': 'everytime',
+        'PASSWORD': 'everytime',
+        'HOST': 'localhost',
         'PORT': '3306',
     }
 }
@@ -114,9 +116,9 @@ if LOCAL:
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'everytime_db',
-            'USER': 'root',
-            'PASSWORD': '',
-            'HOST': 'localhost',
+            'USER': 'admin',
+            'PASSWORD': 'waverytime',
+            'HOST': 'waverytime-db.ckt6zbg1wpus.us-east-2.rds.amazonaws.com',
             'PORT': '3306',
         }
     }

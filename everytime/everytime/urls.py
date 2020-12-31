@@ -18,18 +18,10 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.urls import include, path
 
-from everytime.views import ping
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', ping),
     path('api/', include('user.urls')),
+    path('api/', include('board.urls')),
+    path('api/', include('post.urls')), #임시
 ]
-
-if settings.DEBUG_TOOLBAR:
-    import debug_toolbar
-
-    urlpatterns += [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
-    ]
