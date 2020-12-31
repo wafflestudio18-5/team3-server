@@ -18,6 +18,7 @@ class UserViewSet(viewsets.GenericViewSet):
             return (AllowAny(), )
         return super(UserViewSet, self).get_permissions()
 
+    # POST http://api.waverytime.shop/user/
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -34,6 +35,7 @@ class UserViewSet(viewsets.GenericViewSet):
         data['token'] = user.auth_token.key
         return Response(data, status=status.HTTP_201_CREATED)
 
+    # PUT http://api.waverytime.shop/user/login/
     @action(detail=False, methods=['PUT'])
     def login(self, request):
         username = request.data.get('username')
@@ -53,6 +55,7 @@ class UserViewSet(viewsets.GenericViewSet):
         errmsg = "Wrong username or password!"
         return Response({'ERROR': errmsg}, status=status.HTTP_403_FORBIDDEN)
 
+    # POST http://api.waverytime.shop/user/logout/
     @action(detail=False, methods=['POST'])
     def logout(self, request):
         logout(request)
