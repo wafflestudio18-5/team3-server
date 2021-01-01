@@ -39,16 +39,16 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
-    'board.apps.BoardConfig',
-    'post.apps.PostConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'rest_framework',
     'rest_framework.authtoken',
+
     'user.apps.UserConfig',
     'post.apps.PostConfig',
     'board.apps.BoardConfig',
@@ -78,10 +78,12 @@ if DEBUG_TOOLBAR:
 
 ROOT_URLCONF = 'everytime.urls'
 
+SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'user', 'templates', 'user')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -104,9 +106,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'everytime_db',
-        'USER': 'everytime',
-        'PASSWORD': 'everytime',
-        'HOST': 'localhost',
+        'USER': 'admin',
+        'PASSWORD': 'waverytime',
+        'HOST': 'waverytime-db.ckt6zbg1wpus.us-east-2.rds.amazonaws.com',
         'PORT': '3306',
     }
 }
@@ -116,9 +118,9 @@ if LOCAL:
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'everytime_db',
-            'USER': 'admin',
-            'PASSWORD': 'waverytime',
-            'HOST': 'waverytime-db.ckt6zbg1wpus.us-east-2.rds.amazonaws.com',
+            'USER': 'everytime',
+            'PASSWORD': 'everytime',
+            'HOST': 'localhost',
             'PORT': '3306',
         }
     }
@@ -166,3 +168,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 AUTH_USER_MODEL = 'auth.User'
 
 AUTHENTICATION_BACKENDS = ( 'django.contrib.auth.backends.ModelBackend', )
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'waverytime@gmail.com'
+EMAIL_HOST_PASSWORD = 'waveryTIME9('
+SERVER_EMAIL = 'waverytime@gmail.com'
+DEFAULT_FROM_MAIL = EMAIL_HOST_USER
