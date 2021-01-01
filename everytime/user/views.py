@@ -113,4 +113,4 @@ class UserViewSet(viewsets.GenericViewSet):
     @action(detail=False, methods=['GET'])
     def university(self, request):
         result = UserProfile.objects.values('university').annotate(Count('id'))
-        return Response({'result': result})
+        return Response(result)
