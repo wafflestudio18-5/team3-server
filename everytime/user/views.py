@@ -83,7 +83,6 @@ class UserViewSet(viewsets.GenericViewSet):
 
         subject = '[와브리타임] 학교 인증 확인'
         context = {
-            'current_site': current_site,
             'user_id_b64': user_id_b64,
             'token': token
         }
