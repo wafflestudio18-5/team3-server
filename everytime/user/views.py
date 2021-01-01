@@ -77,19 +77,20 @@ class UserViewSet(viewsets.GenericViewSet):
     @action(detail=False, methods=['POST'])
     def verify(self, request):
         user = request.user
-        current_site = get_current_site(request)
+        current_site = 'http://localhost:8000' if settings.LOCAL else 'http://api.waverytime.shop'
         token = TokenGenerator().make_token(user)
         user_id_b64 = urlsafe_base64_encode(force_bytes(user.id))
 
         subject = '[와브리타임] 학교 인증 확인'
         context = {
+            'current_site': current_site,
             'user_id_b64': user_id_b64,
             'token': token
         }
-        message = render_to_string('mail.html', context)
+        html_message = render_to_string('mail.html', context)
         from_email = settings.EMAIL_HOST_USER
         to_email = ['abyss7500@snu.ac.kr']
-        send_mail(subject, message, from_email, to_email)
+        send_mail(subject, None, from_email, to_email, html_message=html_message)
         msg = "Send Mail!"
         return Response({'MSG': msg})
 
