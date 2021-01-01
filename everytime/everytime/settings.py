@@ -78,10 +78,12 @@ if DEBUG_TOOLBAR:
 
 ROOT_URLCONF = 'everytime.urls'
 
+SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'user', 'templates', 'user')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -166,3 +168,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 AUTH_USER_MODEL = 'auth.User'
 
 AUTHENTICATION_BACKENDS = ( 'django.contrib.auth.backends.ModelBackend', )
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'waverytime@gmail.com'
+EMAIL_HOST_PASSWORD = 'waveryTIME9('
+SERVER_EMAIL = 'waverytime@gmail.com'
+DEFAULT_FROM_MAIL = EMAIL_HOST_USER
