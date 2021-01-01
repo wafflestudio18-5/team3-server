@@ -7,6 +7,7 @@ from django.utils.encoding import force_bytes, force_text
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.shortcuts import redirect
+from django.db.models import Count, Model
 
 from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
@@ -14,6 +15,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
+from user.models import UserProfile
 from user.serializers import UserSerializer
 from user.tokens import TokenGenerator
 
@@ -24,7 +26,7 @@ class UserViewSet(viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated, )
 
     def get_permissions(self):
-        if self.action in ('create', 'login', 'activate'):
+        if self.action in ('create', 'login', 'activate', 'university'):
             return (AllowAny(), )
         return super(UserViewSet, self).get_permissions()
 
@@ -107,3 +109,8 @@ class UserViewSet(viewsets.GenericViewSet):
             return redirect('https://www.waverytime.shop/')
         errmsg = "User is None or Token is Wrong!"
         return Response({'ERR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['GET'])
+    def university(self, request):
+        result = UserProfile.objects.values('university').annotate(Count('id'))
+        return Response({'result': result})
