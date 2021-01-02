@@ -10,7 +10,12 @@ from board.serializers import BoardSerializer
 class BoardViewSet(viewsets.GenericViewSet):
     queryset = Board.objects.all()
     serializer_class = BoardSerializer
-    #permission_classes = (IsAuthenticated(),)
+    permission_classes = (IsAuthenticated(), )
+
+    def get_permissions(self):
+        if self.action in ('listBoards',):
+            return (AllowAny(), )
+        return self.permission_classes
 
     @action(detail=False, methods=['GET'], url_path='list')
     def listBoards(self, request): # GET /api/board/list: List information about boards.
