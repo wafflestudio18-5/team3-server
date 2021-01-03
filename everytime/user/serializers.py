@@ -35,6 +35,37 @@ class UserSerializer(serializers.ModelSerializer):
         return make_password(value)
 
     def validate(self, data):
+        print("Validating...")
+        username = data.get('username')
+        if not username:
+            raise serializers.ValidationError("Username must be set!")
+        if User.objects.filter(username=username).exists():
+            raise serializers.ValidationError("This username already exists!")
+
+        email = data.get('email')
+        if not email:
+            raise serializers.ValidationError("Email must be set!")
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError("This email already exists!")
+
+        last_name = data.get('last_name')
+        if not last_name:
+            raise serializers.ValidationError("Last Name must be set!")
+        if User.objects.filter(last_name=last_name).exists():
+            raise serializers.ValidationError("This last name already exists!")
+
+        profile = data.get('profile')
+        nickname = profile.get('nickname')
+        if not nickname:
+            raise serializers.ValidationError("Nickname must be set!")
+        if UserProfile.objects.filter(nickname=nickname).exists():
+            raise serializers.ValidationError("This nickname already exists!")
+
+        phone = profile.get('phone')
+        if not phone:
+            raise serializers.ValidationError("Phone number must be set!")
+        if UserProfile.objects.filter(phone=phone).exists():
+            raise serializers.ValidationError("This phone already exists!")
         return data
 
     @transaction.atomic
