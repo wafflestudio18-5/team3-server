@@ -86,7 +86,7 @@ class UserViewSet(viewsets.GenericViewSet):
         }
         html_message = render_to_string('mail.html', context)
         from_email = settings.EMAIL_HOST_USER
-        to_email = ['abyss7500@snu.ac.kr']
+        to_email = [user.email]
         send_mail(subject, None, from_email, to_email, html_message=html_message)
         msg = "Send Mail!"
         return Response({'MSG': msg})
