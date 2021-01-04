@@ -21,12 +21,11 @@ from user.tokens import TokenGenerator
 
 
 class UserViewSet(viewsets.GenericViewSet):
-    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated, )
 
     def get_permissions(self):
-        if self.action in ('create', 'login', 'activate', 'university'):
+        if self.action in ('create', 'login', 'activate', 'university', 'check'):
             return (AllowAny(), )
         return super(UserViewSet, self).get_permissions()
 
@@ -52,11 +51,8 @@ class UserViewSet(viewsets.GenericViewSet):
     def login(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
-        print("username : ", username)
-        print("password : ", password)
 
         user = authenticate(request, username=username, password=password)
-        print(user)
         if user:
             login(request, user)
 
@@ -74,6 +70,7 @@ class UserViewSet(viewsets.GenericViewSet):
         msg = "Logout!"
         return Response({'MSG': msg})
 
+    # POST http://api.waverytime.shop/user/verify/
     @action(detail=False, methods=['POST'])
     def verify(self, request):
         user = request.user
@@ -94,6 +91,7 @@ class UserViewSet(viewsets.GenericViewSet):
         msg = "Send Mail!"
         return Response({'MSG': msg})
 
+    # GET http://api.waverytime.shop/user/activate?user_id_b64={user_id_b64}&token={token}
     @action(detail=False, methods=['GET'])
     def activate(self, request):
         user_id_b64 = request.query_params.get('user_id_b64')
@@ -110,7 +108,37 @@ class UserViewSet(viewsets.GenericViewSet):
         errmsg = "User is None or Token is Wrong!"
         return Response({'ERR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
 
+    # GET http://api.waverytime.shop/user/university/
     @action(detail=False, methods=['GET'])
     def university(self, request):
         result = UserProfile.objects.values('university').annotate(Count('id'))
         return Response(result)
+
+    # GET http://api.waverytime.shop?username={username}
+    # GET http://api.waverytime.shop?nickname={nickname}
+    # GET http://api.waverytime.shop?phone={phone}
+    # GET http://api.waverytime.shop?email={email}
+    @action(detail=False, methods=['GET'])
+    def check(self, request):
+        username = request.query_params.get('username')
+        if username and User.objects.filter(username=username).exists():
+            errmsg = "This username already exists!"
+            return Response({'ERR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
+
+        nickname = request.query_params.get('nickname')
+        if nickname and UserProfile.objects.filter(nickname=nickname).exists():
+            errmsg = "This nickname already exists!"
+            return Response({'ERR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
+
+        phone = request.query_params.get('phone')
+        if phone and UserProfile.objects.filter(phone=phone).exists():
+            errmsg = "This phone number already exists!"
+            return Response({'ERR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
+
+        email = request.query_params.get('email')
+        if email and User.objects.filter(email=email).exists():
+            errmsg = "This email already exists!"
+            return Response({'ERR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
+
+        msg = "Clear!"
+        return Response({'MSG': msg}, status=status.HTTP_200_OK)
