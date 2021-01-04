@@ -48,12 +48,6 @@ class UserSerializer(serializers.ModelSerializer):
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError("This email already exists!")
 
-        last_name = data.get('last_name')
-        if not last_name:
-            raise serializers.ValidationError("Last Name must be set!")
-        if User.objects.filter(last_name=last_name).exists():
-            raise serializers.ValidationError("This last name already exists!")
-
         profile = data.get('profile')
         nickname = profile.get('nickname')
         if not nickname:

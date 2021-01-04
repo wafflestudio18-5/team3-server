@@ -118,7 +118,6 @@ class UserViewSet(viewsets.GenericViewSet):
     # GET http://api.waverytime.shop?nickname={nickname}
     # GET http://api.waverytime.shop?phone={phone}
     # GET http://api.waverytime.shop?email={email}
-    # GET http://api.waverytime.shop?last_name={last_name}
     @action(detail=False, methods=['GET'])
     def check(self, request):
         username = request.query_params.get('username')
@@ -139,11 +138,6 @@ class UserViewSet(viewsets.GenericViewSet):
         email = request.query_params.get('email')
         if email and User.objects.filter(email=email).exists():
             errmsg = "This email already exists!"
-            return Response({'ERR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
-
-        last_name = request.query_params.get('last_name')
-        if last_name and User.objects.filter(last_name=last_name).exists():
-            errmsg = "This last name already exists!"
             return Response({'ERR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
 
         msg = "Clear!"
