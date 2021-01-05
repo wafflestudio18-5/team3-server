@@ -50,7 +50,7 @@ class UserSerializer(serializers.ModelSerializer):
         if profile:
             phone = profile.get('phone')
             if phone:
-                reg = re.compile(r'\d{3}-\d{4}-\d{4}')
+                reg = re.compile(r'\d{3}-\d{3,4}-\d{4}')
                 if not reg.match(phone):
                     raise serializers.ValidationError("This phone is invalid!")
 
