@@ -25,7 +25,8 @@ urlpatterns = [
     path('', ping),
     path('', include('user.urls')),
     path('', include('board.urls')),
-    path('', include('post.urls')), # 임시
+    path('', include('post.urls')),
+    path('', include('comment.urls')),
 ]
 
 if settings.DEBUG_TOOLBAR:
