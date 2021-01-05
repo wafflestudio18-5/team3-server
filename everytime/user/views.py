@@ -24,6 +24,7 @@ from user.tokens import TokenGenerator
 
 
 class UserViewSet(viewsets.GenericViewSet):
+    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated, )
 
