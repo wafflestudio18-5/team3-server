@@ -8,6 +8,9 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.shortcuts import redirect
 from django.db.models import Count, Model
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.contrib.auth.hashers import make_password
 
 from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
@@ -45,6 +48,21 @@ class UserViewSet(viewsets.GenericViewSet):
         data = serializer.data
         data['token'] = user.auth_token.key
         return Response(data, status=status.HTTP_201_CREATED)
+
+    # PUT http://api.waverytime.shop/user/me/
+    def update(self, request, pk=None):
+        if pk != 'me':
+            errmsg = "Can't update other users information!"
+            return Response({'ERR': errmsg}, status=status.HTTP_403_FORBIDDEN)
+
+        user = request.user
+        data = request.data.copy()
+        data.pop('is_verified', None)
+
+        serializer = self.get_serializer(user, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.update(user, serializer.validated_data)
+        return Response(serializer.data)
 
     # PUT http://api.waverytime.shop/user/login/
     @action(detail=False, methods=['PUT'])
