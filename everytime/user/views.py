@@ -8,6 +8,9 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.shortcuts import redirect
 from django.db.models import Count, Model
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.contrib.auth.hashers import make_password
 
 from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
@@ -26,7 +29,7 @@ class UserViewSet(viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated, )
 
     def get_permissions(self):
-        if self.action in ('create', 'login', 'activate', 'university'):
+        if self.action in ('create', 'login', 'activate', 'university', 'check'):
             return (AllowAny(), )
         return super(UserViewSet, self).get_permissions()
 
@@ -47,16 +50,28 @@ class UserViewSet(viewsets.GenericViewSet):
         data['token'] = user.auth_token.key
         return Response(data, status=status.HTTP_201_CREATED)
 
+    # PUT http://api.waverytime.shop/user/me/
+    def update(self, request, pk=None):
+        if pk != 'me':
+            errmsg = "Can't update other users information!"
+            return Response({'ERR': errmsg}, status=status.HTTP_403_FORBIDDEN)
+
+        user = request.user
+        data = request.data.copy()
+        data.pop('is_verified', None)
+
+        serializer = self.get_serializer(user, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.update(user, serializer.validated_data)
+        return Response(serializer.data)
+
     # PUT http://api.waverytime.shop/user/login/
     @action(detail=False, methods=['PUT'])
     def login(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
-        print("username : ", username)
-        print("password : ", password)
 
         user = authenticate(request, username=username, password=password)
-        print(user)
         if user:
             login(request, user)
 
@@ -74,6 +89,7 @@ class UserViewSet(viewsets.GenericViewSet):
         msg = "Logout!"
         return Response({'MSG': msg})
 
+    # POST http://api.waverytime.shop/user/verify/
     @action(detail=False, methods=['POST'])
     def verify(self, request):
         user = request.user
@@ -89,11 +105,12 @@ class UserViewSet(viewsets.GenericViewSet):
         }
         html_message = render_to_string('mail.html', context)
         from_email = settings.EMAIL_HOST_USER
-        to_email = ['abyss7500@snu.ac.kr']
+        to_email = [user.email]
         send_mail(subject, None, from_email, to_email, html_message=html_message)
         msg = "Send Mail!"
         return Response({'MSG': msg})
 
+    # GET http://api.waverytime.shop/user/activate?user_id_b64={user_id_b64}&token={token}
     @action(detail=False, methods=['GET'])
     def activate(self, request):
         user_id_b64 = request.query_params.get('user_id_b64')
@@ -110,7 +127,37 @@ class UserViewSet(viewsets.GenericViewSet):
         errmsg = "User is None or Token is Wrong!"
         return Response({'ERR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
 
+    # GET http://api.waverytime.shop/user/university/
     @action(detail=False, methods=['GET'])
     def university(self, request):
         result = UserProfile.objects.values('university').annotate(Count('id'))
         return Response(result)
+
+    # GET http://api.waverytime.shop?username={username}
+    # GET http://api.waverytime.shop?nickname={nickname}
+    # GET http://api.waverytime.shop?phone={phone}
+    # GET http://api.waverytime.shop?email={email}
+    @action(detail=False, methods=['GET'])
+    def check(self, request):
+        username = request.query_params.get('username')
+        if username and User.objects.filter(username=username).exists():
+            errmsg = "This username already exists!"
+            return Response({'ERR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
+
+        nickname = request.query_params.get('nickname')
+        if nickname and UserProfile.objects.filter(nickname=nickname).exists():
+            errmsg = "This nickname already exists!"
+            return Response({'ERR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
+
+        phone = request.query_params.get('phone')
+        if phone and UserProfile.objects.filter(phone=phone).exists():
+            errmsg = "This phone number already exists!"
+            return Response({'ERR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
+
+        email = request.query_params.get('email')
+        if email and User.objects.filter(email=email).exists():
+            errmsg = "This email already exists!"
+            return Response({'ERR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
+
+        msg = "Clear!"
+        return Response({'MSG': msg}, status=status.HTTP_200_OK)
