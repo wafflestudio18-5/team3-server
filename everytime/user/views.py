@@ -40,9 +40,7 @@ class UserViewSet(viewsets.GenericViewSet):
         try:
             user = serializer.save()
         except Exception as e:
-            print(e)
-            errmsg = "Something Wrong!"
-            return Response({'ERROR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'ERR': e.detail[0]}, status=status.HTTP_400_BAD_REQUEST)
 
         login(request, user)
 
@@ -64,6 +62,18 @@ class UserViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.update(user, serializer.validated_data)
         return Response(serializer.data)
+
+    # DELETE http://api.waverytime.shop/user/me/
+    def destroy(self, request, pk=None):
+        if pk != 'me':
+            errmsg = "Can't destroy other users information!"
+            return Response({'ERR': errmsg}, status=status.HTTP_403_FORBIDDEN)
+
+        user = request.user
+        user.profile.delete()
+        user.delete()
+        msg = "User Deleted!"
+        return Response({'MSG': msg}, status=status.HTTP_200_OK)
 
     # PUT http://api.waverytime.shop/user/login/
     @action(detail=False, methods=['PUT'])
