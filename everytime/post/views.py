@@ -27,14 +27,14 @@ class PostViewSet(viewsets.GenericViewSet):
         return self.permission_classes
 
     @action(detail=False, methods=['GET'], url_path='listall')
-    def listAllPosts(self, request): # GET /api/post/listall/ | list all posts
+    def listAllPosts(self, request): # GET /post/listall/ | list all posts
     # (모든 board에 있는 post를 보여줌, 개발용 api)
         post = Post.objects.all()
         data = self.get_serializer(post, many=True).data
         return Response(data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['GET'], url_path='list')
-    def listPosts(self, request): # GET /api/post/list/ | list posts
+    def listPosts(self, request): # GET /post/list/ | list posts
         try:
             start_num = int(request.data.get('start_num')) # request.query_params.get() ?
             if 'limit_num' in request.data:
@@ -48,7 +48,7 @@ class PostViewSet(viewsets.GenericViewSet):
                 return Response({"error": "Board does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
         except TypeError:
-            return Response({"error": "start_num, limit_num and board_id must be integers."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "start_num, limit_num and board must be integers."}, status=status.HTTP_400_BAD_REQUEST)
 
         if 'tag' in request.data:
             tag = request.data.get('tag')
@@ -60,7 +60,7 @@ class PostViewSet(viewsets.GenericViewSet):
         return Response(data, status = status.HTTP_200_OK)
 
     @action(detail=False, methods=['POST'], url_path='write')
-    def writePost(self, request): # POST /api/post/write/ | write a post
+    def writePost(self, request): # POST /post/write/ | write a post
         user = request.user
         is_verified = UserProfile.objects.get(user=user).is_verified
         if not is_verified:
@@ -69,7 +69,7 @@ class PostViewSet(viewsets.GenericViewSet):
         try:
             board_id = int(request.data.get('board'))
         except TypeError:
-            return Response({"error": "board_id must be an integer."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "board must be an integer."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             board = Board.objects.get(id=board_id)
@@ -83,7 +83,7 @@ class PostViewSet(viewsets.GenericViewSet):
 
     @transaction.atomic
     @action(detail=True, methods=['PUT'], url_path='like')
-    def likePost(self, request, pk=None): # PUT /api/post/{pk}/like/ | like a post
+    def likePost(self, request, pk=None): # PUT /post/{pk}/like/ | like a post
         user = request.user
         is_verified = UserProfile.objects.get(user=user).is_verified
         if not is_verified:
@@ -107,7 +107,7 @@ class PostViewSet(viewsets.GenericViewSet):
         return Response(status = status.HTTP_200_OK) # serializer?
 
     @action(detail=True, methods=['DELETE'], url_path='delete')
-    def deletePost(self, request, pk=None): # DELETE /api/post/{pk}/delete/ | delete a post
+    def deletePost(self, request, pk=None): # DELETE /post/{pk}/delete/ | delete a post
         user = request.user
         is_verified = UserProfile.objects.get(user=user).is_verified
         if not is_verified:
@@ -118,7 +118,7 @@ class PostViewSet(viewsets.GenericViewSet):
         except ObjectDoesNotExist:
             return Response({"error": "Post does not exist."}, status = status.HTTP_404_NOT_FOUND)
 
-        if user.id != post.user:
+        if user != post.user:
             return Response({"error": "You do not have a permission to delete this post."}, status=status.HTTP_403_FORBIDDEN)
         post.delete()
         return Response(status=status.HTTP_200_OK)
