@@ -19,6 +19,7 @@ class CommentViewSet(viewsets.GenericViewSet):
             return (AllowAny(), )
         return self.permission_classes
 
+    @action(detail=False, methods=['GET'], url_path='list')
     def listComments(self, request): # GET /comment/list/ | list comments
         try:
             post_id = int(request.data.get('post'))
@@ -33,7 +34,7 @@ class CommentViewSet(viewsets.GenericViewSet):
         data = self.get_serializer(comments, many=True).data
         return Response(data, status=status.HTTP_200_OK)
 
-
+    @action(detail=False, methods=['POST'], url_path='write')
     def writeComment(self, request): # POST /comment/write/ | write a comment
         user = request.user
         is_verified = UserProfile.objects.get(user=user).is_verified
