@@ -115,7 +115,15 @@ class UserViewSet(viewsets.GenericViewSet):
         }
         html_message = render_to_string('mail.html', context)
         from_email = settings.EMAIL_HOST_USER
-        to_email = [user.email]
+        email = request.data.get('email')
+        if not email:
+            email = user.email
+        try:
+            validate_email(email)
+        except ValidationError:
+            errmsg = "This email is not valid!"
+            return Response({'ERR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
+        to_email = [email]
         send_mail(subject, None, from_email, to_email, html_message=html_message)
         msg = "Send Mail!"
         return Response({'MSG': msg})
