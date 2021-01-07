@@ -48,7 +48,7 @@ class PostViewSet(viewsets.GenericViewSet):
                 return Response({"error": "Board does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
         except TypeError:
-            return Response({"error": "start_num, limit_num and board_id must be integers."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "start_num, limit_num and board must be integers."}, status=status.HTTP_400_BAD_REQUEST)
 
         if 'tag' in request.data:
             tag = request.data.get('tag')
@@ -69,7 +69,7 @@ class PostViewSet(viewsets.GenericViewSet):
         try:
             board_id = int(request.data.get('board'))
         except TypeError:
-            return Response({"error": "board_id must be an integer."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "board must be an integer."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             board = Board.objects.get(id=board_id)
@@ -118,7 +118,7 @@ class PostViewSet(viewsets.GenericViewSet):
         except ObjectDoesNotExist:
             return Response({"error": "Post does not exist."}, status = status.HTTP_404_NOT_FOUND)
 
-        if user.id != post.user:
+        if user != post.user:
             return Response({"error": "You do not have a permission to delete this post."}, status=status.HTTP_403_FORBIDDEN)
         post.delete()
         return Response(status=status.HTTP_200_OK)

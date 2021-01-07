@@ -15,12 +15,24 @@ class CommentViewSet(viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated(), )
 
     def get_permissions(self):
-        if self.action in ('', 'listPosts'):
+        if self.action in ('listComments',) :
             return (AllowAny(), )
         return self.permission_classes
 
     def listComments(self, request): # GET /comment/list/ | list comments
-        pass
+        try:
+            post_id = int(request.data.get('post'))
+        except TypeError:
+            return Response({"error": "post must be an integer."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            post = Post.objects.get(id=post_id)
+        except ObjectDoesNotExist:
+            return Response({"error": "Post does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        comments = Comment.objects.filter(post_id=post_id)
+        data = self.get_serializer(comments, many=True).data
+        return Response(data, status=status.HTTP_200_OK)
+
 
     def writeComment(self, request): # POST /comment/write/ | write a comment
         user = request.user
@@ -31,7 +43,7 @@ class CommentViewSet(viewsets.GenericViewSet):
         try:
             post_id = int(request.data.get('post'))
         except TypeError:
-            return Response({"error": "post_id must be an integer."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "post must be an integer."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             post = Post.objects.get(id=post_id)
@@ -80,7 +92,7 @@ class CommentViewSet(viewsets.GenericViewSet):
         except ObjectDoesNotExist:
             return Response({"error": "Comment does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
-        if user != comment.user: #TODO: test this and post/views
+        if user != comment.user:
             return Response({"error": "You do not have a permission to delete this post."}, status=status.HTTP_403_FORBIDDEN)
         comment.deleted = True
         comment.save()

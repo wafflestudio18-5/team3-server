@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.core.exceptions import ObjectDoesNotExist
 
 class CommentSerializer(serializers.ModelSerializer):
-    reply = serializers.SerialierMethodField()
+    reply = serializers.SerializerMethodField()
     class Meta:
         model = Comment
         fields = (
