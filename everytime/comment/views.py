@@ -31,7 +31,7 @@ class CommentViewSet(viewsets.GenericViewSet):
         except ObjectDoesNotExist:
             return Response({"error": "Post does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
-        comments = Comment.objects.filter(post_id=post_id)
+        comments = Comment.objects.filter(post_id=post_id, parent=None)
         data = self.get_serializer(comments, many=True).data
         return Response(data, status=status.HTTP_200_OK)
 
@@ -44,13 +44,23 @@ class CommentViewSet(viewsets.GenericViewSet):
 
         try:
             post_id = int(request.data.get('post'))
+            post = Post.objects.get(id=post_id)
         except TypeError:
             return Response({"error": "post must be an integer."}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            post = Post.objects.get(id=post_id)
         except ObjectDoesNotExist:
             return Response({"error": "Post does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        if "parent" in request.data:
+            try:
+                parent_id = int(request.data.get('parent'))
+                parent = Comment.objects.get(id=parent_id)
+            except TypeError:
+                return Response({"error": "parent must be an integer."}, status=status.HTTP_400_BAD_REQUEST)
+            except ObjectDoesNotExist:
+                return Response({"error": "Parent comment does not exist."}, status=status.HTTP_404_NOT_FOUND)
+            else:
+                if parent.parent != None:
+                    return Response({"error": "Nested reply comment is not allowed."}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(data = request.data)
         serializer.is_valid(raise_exception = True)
