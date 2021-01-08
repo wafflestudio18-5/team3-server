@@ -47,6 +47,7 @@ class ReplySerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'user_id',
+            'nickname',
             'post',
             'parent',
             'content',
