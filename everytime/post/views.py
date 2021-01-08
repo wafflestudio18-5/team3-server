@@ -36,12 +36,12 @@ class PostViewSet(viewsets.GenericViewSet):
     @action(detail=False, methods=['GET'], url_path='list')
     def listPosts(self, request): # GET /post/list/ | list posts
         try:
-            start_num = int(request.data.get('start_num')) # request.query_params.get() ?
-            if 'limit_num' in request.data:
-                limit_num = int(request.data.get('limit_num'))
+            start_num = int(request.query_params.get('start_num')) # request.query_params.get() ?
+            if 'limit_num' in request.query_params:
+                limit_num = int(request.query_params.get('limit_num'))
             else:
                 limit_num = 20 # default
-            board_id = int(request.data.get('board'))
+            board_id = int(request.query_params.get('board'))
             try:
                 board = Board.objects.get(id=board_id)
             except ObjectDoesNotExist:

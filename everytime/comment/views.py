@@ -22,7 +22,7 @@ class CommentViewSet(viewsets.GenericViewSet):
     @action(detail=False, methods=['GET'], url_path='list')
     def listComments(self, request): # GET /comment/list/ | list comments
         try:
-            post_id = int(request.data.get('post'))
+            post_id = int(request.query_params.get('post'))
         except TypeError:
             return Response({"error": "post must be an integer."}, status=status.HTTP_400_BAD_REQUEST)
         try:
