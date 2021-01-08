@@ -9,7 +9,7 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'user_id',
-            'post_id',
+            'post',
             'parent', #부모 댓글
             'content',
             'is_anonym',
@@ -33,6 +33,7 @@ class ReplySerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'user_id',
+            'post',
             'parent',
             'content',
             'is_anonym',
