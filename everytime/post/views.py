@@ -36,7 +36,7 @@ class PostViewSet(viewsets.GenericViewSet):
     @action(detail=False, methods=['GET'], url_path='list')
     def listPosts(self, request): # GET /post/list/ | list posts
         try:
-            start_num = int(request.query_params.get('start_num')) # request.query_params.get() ?
+            start_num = int(request.query_params.get('start_num'))
             if 'limit_num' in request.query_params:
                 limit_num = int(request.query_params.get('limit_num'))
             else:
@@ -137,9 +137,36 @@ class PostViewSet(viewsets.GenericViewSet):
         post.delete()
         return Response(status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=['GET'], url_path='hot')
+    def hotPosts(self, request): # GET /post/hot/ | list hot posts
+        try:
+            minLikes = int(request.query_params.get('minLikes'))
+        except TypeError:
+            return Response({"error": "minLikes must be an integer."}, status=status.HTTP_400_BAD_REQUEST)
+
+        post = Post.objects.filter(numLikes__gte=minLikes).order_by('-id')
+        data = self.get_serializer(post, many=True).data
+        return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['GET'], url_path='info')
+    def infoPost(self, request, pk=None): # GET /post/{post_id}/info/ | get information about a post
+        user = request.user
+        is_verified = UserProfile.objects.get(user=user).is_verified
+        if not is_verified:
+            return Response({"error": "You do not have a permission to delete a post."}, status=status.HTTP_403_FORBIDDEN)
+        
+        try:
+            post = self.get_object()
+        except ObjectDoesNotExist:
+            return Response({"error": "Post does not exist."}, status = status.HTTP_404_NOT_FOUND)
+
+        data = self.get_serializer(post).data
+        return Response(data, status=status.HTTP_200_OK)
+      
     @action(detail=False, methods=['GET'], url_path='me')
     def myPost(self, request):
         user = request.user
         post = Post.objects.filter(user=user)
         data = self.get_serializer(post, many=True).data
         return Response(data, status=status.HTTP_200_OK)
+
