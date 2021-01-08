@@ -1,7 +1,9 @@
 from post.models import Post
 from rest_framework import serializers
 
+
 class PostSerializer(serializers.ModelSerializer):
+    nickname = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -19,6 +21,9 @@ class PostSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
         )
+
+    def get_nickname(self, post):
+        return post.user.profile.nickname
 
     def validate_tags(self, value):
         #TAGS = ('잡담', '고민', '정보', '진로')
