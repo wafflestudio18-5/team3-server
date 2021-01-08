@@ -137,4 +137,9 @@ class PostViewSet(viewsets.GenericViewSet):
         post.delete()
         return Response(status=status.HTTP_200_OK)
 
-
+    @action(detail=False, methods=['GET'], url_path='me')
+    def myPost(self, request):
+        user = request.user
+        post = Post.objects.filter(user=user)
+        data = self.get_serializer(post, many=True).data
+        return Response(data, status=status.HTTP_200_OK)
