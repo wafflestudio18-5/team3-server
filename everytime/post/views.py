@@ -81,6 +81,20 @@ class PostViewSet(viewsets.GenericViewSet):
         serializer.save(user=user, board_id=board_id)
         return Response(serializer.data, status = status.HTTP_201_CREATED)
 
+    @action(detail=True, methods=['PUT'], url_path='update')
+    def updatePost(self, request, pk=None): # PUT /post/{pk}/update/
+        user = request.user
+
+        try:
+            post = self.get_object()
+        except ObjectDoesNotExist:
+            return Response({"error": "Post does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.update(post, serializer.validated_data)
+        return Response(serializer.data)
+
     @transaction.atomic
     @action(detail=True, methods=['PUT'], url_path='like')
     def likePost(self, request, pk=None): # PUT /post/{pk}/like/ | like a post
@@ -148,6 +162,11 @@ class PostViewSet(viewsets.GenericViewSet):
 
         data = self.get_serializer(post).data
         return Response(data, status=status.HTTP_200_OK)
-
-
+      
+    @action(detail=False, methods=['GET'], url_path='me')
+    def myPost(self, request):
+        user = request.user
+        post = Post.objects.filter(user=user)
+        data = self.get_serializer(post, many=True).data
+        return Response(data, status=status.HTTP_200_OK)
 
