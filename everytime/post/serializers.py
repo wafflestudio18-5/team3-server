@@ -21,9 +21,9 @@ class PostSerializer(serializers.ModelSerializer):
         )
 
     def validate_tags(self, value):
-        TAGS = ('잡담', '고민', '정보', '진로')  # 임시로 정한 tag 목록
-        if not str(value) in TAGS:
-            raise serializers.ValidationError("Invalid tag.")
+        #TAGS = ('잡담', '고민', '정보', '진로')
+        #if not str(value) in TAGS:
+        #    raise serializers.ValidationError("Invalid tag.")
         return value
 
     def create(self, validated_data):
