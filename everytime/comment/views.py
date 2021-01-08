@@ -10,6 +10,7 @@ from comment.serializers import CommentSerializer
 from user.models import UserProfile
 from post.models import Post
 
+
 class CommentViewSet(viewsets.GenericViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
@@ -133,3 +134,10 @@ class CommentViewSet(viewsets.GenericViewSet):
         comment.deleted = True
         comment.save()
         return Response(status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['GET'], url_path='me')
+    def myComment(self, request):
+        user = request.user
+        comment = Comment.objects.filter(user=user)
+        data = self.get_serializer(comment, many=True).data
+        return Response(data, status=status.HTTP_200_OK)
