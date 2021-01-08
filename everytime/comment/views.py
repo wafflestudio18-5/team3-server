@@ -35,6 +35,7 @@ class CommentViewSet(viewsets.GenericViewSet):
         data = self.get_serializer(comments, many=True).data
         return Response(data, status=status.HTTP_200_OK)
 
+    @transaction.atomic
     @action(detail=False, methods=['POST'], url_path='write')
     def writeComment(self, request): # POST /comment/write/ | write a comment
         user = request.user
@@ -61,6 +62,9 @@ class CommentViewSet(viewsets.GenericViewSet):
             else:
                 if parent.parent != None:
                     return Response({"error": "Nested reply comment is not allowed."}, status=status.HTTP_400_BAD_REQUEST)
+
+        post.numComments += 1
+        post.save()
 
         serializer = self.get_serializer(data = request.data)
         serializer.is_valid(raise_exception = True)
