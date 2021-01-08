@@ -2,13 +2,19 @@ from comment.models import Comment
 from rest_framework import serializers
 from django.core.exceptions import ObjectDoesNotExist
 
+from user.models import UserProfile
+
+
 class CommentSerializer(serializers.ModelSerializer):
+    nickname = serializers.SerializerMethodField()
     reply = serializers.SerializerMethodField()
+
     class Meta:
         model = Comment
         fields = (
             'id',
             'user_id',
+            'nickname',
             'post',
             'parent', #부모 댓글
             'content',
@@ -27,12 +33,21 @@ class CommentSerializer(serializers.ModelSerializer):
         except ObjectDoesNotExist:
             return None
 
+    def get_nickname(self, comment):
+        user = comment.user
+        profile = UserProfile.objects.get(user=user)
+        return profile.nickname
+
+
 class ReplySerializer(serializers.ModelSerializer):
+    nickname = serializers.SerializerMethodField()
+
     class Meta:
         model = Comment
         fields = (
             'id',
             'user_id',
+            'nickname',
             'post',
             'parent',
             'content',
@@ -42,3 +57,8 @@ class ReplySerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at'
         )
+
+    def get_nickname(self, comment):
+        user = comment.user
+        profile = UserProfile.objects.get(user=user)
+        return profile.nickname
