@@ -36,7 +36,7 @@ class PostViewSet(viewsets.GenericViewSet):
     @action(detail=False, methods=['GET'], url_path='list')
     def listPosts(self, request): # GET /post/list/ | list posts
         try:
-            start_num = int(request.query_params.get('start_num')) # request.query_params.get() ?
+            start_num = int(request.query_params.get('start_num'))
             if 'limit_num' in request.query_params:
                 limit_num = int(request.query_params.get('limit_num'))
             else:
@@ -122,5 +122,18 @@ class PostViewSet(viewsets.GenericViewSet):
             return Response({"error": "You do not have a permission to delete this post."}, status=status.HTTP_403_FORBIDDEN)
         post.delete()
         return Response(status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['GET'], url_path='hot')
+    def hotPosts(self, request): # GET /post/hot/ | list hot posts
+        try:
+            minLikes = int(request.query_params.get('minLikes'))
+        except TypeError:
+            return Response({"error": "minLikes must be an integer."}, status=status.HTTP_400_BAD_REQUEST)
+
+        post = Post.objects.filter(numLikes__gte=minLikes).order_by('-id')
+        data = self.get_serializer(post, many=True).data
+        return Response(data, status=status.HTTP_200_OK)
+
+
 
 
