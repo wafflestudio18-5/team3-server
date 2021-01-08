@@ -134,6 +134,20 @@ class PostViewSet(viewsets.GenericViewSet):
         data = self.get_serializer(post, many=True).data
         return Response(data, status=status.HTTP_200_OK)
 
+    @action(detail=True, methods=['GET'], url_path='info')
+    def infoPost(self, request, pk=None): # GET /post/{post_id}/info/ | get information about a post
+        user = request.user
+        is_verified = UserProfile.objects.get(user=user).is_verified
+        if not is_verified:
+            return Response({"error": "You do not have a permission to delete a post."}, status=status.HTTP_403_FORBIDDEN)
+        
+        try:
+            post = self.get_object()
+        except ObjectDoesNotExist:
+            return Response({"error": "Post does not exist."}, status = status.HTTP_404_NOT_FOUND)
+
+        data = self.get_serializer(post).data
+        return Response(data, status=status.HTTP_200_OK)
 
 
 
