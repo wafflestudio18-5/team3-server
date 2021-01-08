@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from comment.models import Comment, UserLikeComment
 from comment.serializers import CommentSerializer
 from user.models import UserProfile
+from post.models import Post
 
 class CommentViewSet(viewsets.GenericViewSet):
     queryset = Comment.objects.all()
@@ -81,13 +82,33 @@ class CommentViewSet(viewsets.GenericViewSet):
 
         return Response(status=status.HTTP_200_OK)
 
+    @action(detail=True, methods=['PUT'], url_path='update')
+    def updateComment(self, request, pk=None): # PUT /comment/{pk}/update/ | update a comment
+        user = request.user
+        is_verified = UserProfile.objects.get(user=user).is_verified
+        if not is_verified:
+            return Response({"error": "You do not have a permission to update a comment."}, status=status.HTTP_403_FORBIDDEN)
+        try:
+            comment = self.get_object()
+        except ObjectDoesNotExist:
+            return Response({"error": "Comment does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        if user != comment.user:
+            return Response({"error": "You do not have a permission to update this comment."}, status=status.HTTP_403_FORBIDDEN)
+
+        if "content" in request.data:
+            comment.content = request.data.get('content')
+
+        comment.save()
+        return Response(status=status.HTTP_200_OK)
+
+
     @action(detail=True, methods=['DELETE'], url_path='delete')
     def deleteComment(self, request, pk=None): # DELETE /comment/{pk}/delete/ | delete a comment
         user = request.user
         is_verified = UserProfile.objects.get(user=user).is_verified
         if not is_verified:
             return Response({"error": "You do not have a permission to delete a comment."}, status=status.HTTP_403_FORBIDDEN)
-
         try:
             comment = self.get_object()
         except ObjectDoesNotExist:
