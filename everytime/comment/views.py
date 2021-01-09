@@ -131,8 +131,12 @@ class CommentViewSet(viewsets.GenericViewSet):
 
         if user != comment.user:
             return Response({"error": "You do not have a permission to delete this post."}, status=status.HTTP_403_FORBIDDEN)
-        comment.deleted = True
-        comment.save()
+
+        if Comment.objects.filter(parent=comment).exists():
+            comment.deleted = True
+            comment.save()
+        else:
+            comment.delete()
         return Response(status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['GET'], url_path='me')
