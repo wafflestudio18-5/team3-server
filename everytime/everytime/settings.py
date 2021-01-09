@@ -190,5 +190,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://3.17.37.198',
     'http://waverytime.shop',
     'https://waverytime.shop'
+    'http://www.waverytime.shop',
+    'https://www.waverytime.shop',
 ]
 CORS_ALLOW_CREDENTIALS = True
