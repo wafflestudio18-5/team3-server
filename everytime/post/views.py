@@ -150,11 +150,6 @@ class PostViewSet(viewsets.GenericViewSet):
 
     @action(detail=True, methods=['GET'], url_path='info')
     def infoPost(self, request, pk=None): # GET /post/{post_id}/info/ | get information about a post
-        user = request.user
-        is_verified = UserProfile.objects.get(user=user).is_verified
-        if not is_verified:
-            return Response({"error": "You do not have a permission to delete a post."}, status=status.HTTP_403_FORBIDDEN)
-        
         try:
             post = self.get_object()
         except ObjectDoesNotExist:
