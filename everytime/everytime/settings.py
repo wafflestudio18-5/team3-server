@@ -177,7 +177,7 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'waverytime@gmail.com'
-EMAIL_HOST_PASSWORD = 'waveryTIME9('
+EMAIL_HOST_PASSWORD = 'WAVERYtime9('
 SERVER_EMAIL = 'waverytime@gmail.com'
 DEFAULT_FROM_MAIL = EMAIL_HOST_USER
 
