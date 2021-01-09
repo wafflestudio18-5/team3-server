@@ -48,4 +48,5 @@ class PostSerializer(serializers.ModelSerializer):
             instance.tag = validated_data['tag']
         if 'is_anonym' in validated_data:
             instance.is_anonym = validated_data['is_anonym']
+            instance.save()
         return instance
