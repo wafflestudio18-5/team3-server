@@ -141,7 +141,7 @@ class UserViewSet(viewsets.GenericViewSet):
             profile.is_verified = True
             profile.save()
             login(request, user)
-            return redirect('https://www.waverytime.shop/verified/')
+            return redirect('https://waverytime.shop/verified/')
         errmsg = "User is None or Token is Wrong!"
         return Response({'ERR': errmsg}, status=status.HTTP_400_BAD_REQUEST)
 
