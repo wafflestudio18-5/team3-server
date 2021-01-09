@@ -22,7 +22,7 @@ class PostViewSet(viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated(), )
 
     def get_permissions(self):
-        if self.action in ('listAllPosts', 'listPosts'):
+        if self.action in ('listAllPosts', 'listPosts', 'infoPost', 'hotPosts'):
             return (AllowAny(), )
         return self.permission_classes
 
