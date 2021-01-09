@@ -90,7 +90,7 @@ class PostViewSet(viewsets.GenericViewSet):
         except ObjectDoesNotExist:
             return Response({"error": "Post does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(post, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.update(post, serializer.validated_data)
         return Response(serializer.data)
